@@ -8,7 +8,7 @@ import {
    getFirestore, collection, addDoc, 
    getDocs, doc, onSnapshot, query,
    updateDoc, serverTimestamp, orderBy, limit,
-   deleteDoc
+   deleteDoc 
   } from "firebase/firestore";
  
 const firebaseConfig = {
@@ -34,24 +34,13 @@ function App() {
   // const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-      const getData = async() => {
-      const querySnapshot = await getDocs(collection(db, "posts"));
-      querySnapshot.forEach((doc) => {
-        console.log(`${doc.id} =>` , doc.data());
-        setPosts((prev)=> {
-          let newArray = [...prev, doc.data()]
-          return newArray
-        });
-      });
-    }
-    // getData();
     let unsubscribe;
     const getRealTimeData = async () => {
       const q = query(collection(db, "posts"), orderBy("createdOn", "desc"));
       unsubscribe = onSnapshot(q, (querySnapshot) => {
       const allPosts = [];
       querySnapshot.forEach((doc) => {
-        allPosts.push({...doc.data(), ...doc.id});
+        allPosts.push({...doc.data(), id:doc.id});
       });
       setPosts(allPosts);
       console.log("Posts: ", allPosts);
@@ -69,7 +58,7 @@ function App() {
 
   const createPost = async (e) => {
     e.preventDefault();
-
+    document.querySelector(".post-input").value = "";
     console.log(postText);
     if(postText === ""){
         alert("Fill some text");
@@ -91,7 +80,22 @@ function App() {
   const deletePost = async (postId) => {
     await deleteDoc(doc(db, "posts", postId));
   };
+  const editPost = async (postId, updatedText) => {
+    await updateDoc(doc(db, "posts", postId), {
+      text: updatedText
+    });
+  };
 
+
+  const viewOptions = (e) => {
+    console.log(e)
+    if(document.querySelector(".options-box").style.display === "flex"){
+      document.querySelector(".options-box").style.display = "none"
+    }else{
+
+      document.querySelector(".options-box").style.display = "flex"
+    }
+  }
 
   return (
       <>
@@ -100,6 +104,7 @@ function App() {
       <div className="create-box">
       <form onSubmit={createPost}>
         <input
+        className="post-input"
           type="text"
           placeholder="What's in your mind...."
           onChange={(e) => {
@@ -131,13 +136,39 @@ function App() {
                 </span>
               </div>
               </div>
-              <div className="post-options" onClick={()=> {
+              <span className="post-options"  onClick={() =>{viewOptions(eachPost)}}>g
+              <div className="options-box">
+                <span className="option" onClick={()=> {
                 deletePost(eachPost?.id);
-              }}>gggg</div>
+                }}>delete</span>
+                <span className="option" onClick={()=> {
+                const updatedState = posts.map(eachItem => {
+                  if(eachItem?.id === eachPost?.id){
+                    return {...eachItem, isEditing: true}
+                  }else{
+                    return eachItem
+                  }
+                })
+                setPosts(updatedState)
+                }}>edit</span>
+              </div>
+              </span>
             </div>
-
-             
-            <h3>{eachPost?.text}</h3>
+            <h3>{(eachPost.isEditing) ? 
+            <div>
+              <input type="text"/>
+              <button onClick={()=> {
+                const updatedState = posts.map(eachItem => {
+                  if(eachItem?.id === eachPost?.id){
+                    return {...eachItem, isEditing: !eachItem.isEditing}
+                  }else{
+                    return eachItem
+                  }
+                })
+                setPosts(updatedState)
+              }}>ok</button>
+              </div>:
+            eachPost?.text}</h3>
 
 
 
