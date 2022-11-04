@@ -75,15 +75,19 @@ function App() {
     e.preventDefault();
 
     console.log(postText);
-    try {
-      const docRef = await addDoc(collection(db, "posts"), {
-        text: postText,
-        createdOn: new Date().getTime(),
-        // postId: id
-      });
-      console.log("Document written with ID: ", docRef.id);
-    } catch (e) {
-      console.error("Error adding document: ", e);
+    if(postText === ""){
+        alert("Fill some text");
+    }else{
+      try {
+        const docRef = await addDoc(collection(db, "posts"), {
+          text: postText,
+          createdOn: new Date().getTime(),
+          // postId: id
+        });
+        console.log("Document written with ID: ", docRef.id);
+      } catch (e) {
+        console.error("Error adding document: ", e);
+      }
     }
     
     
