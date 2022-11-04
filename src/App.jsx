@@ -31,6 +31,8 @@ function App() {
 
   const [postText, setPostText] = useState("");
   const [posts, setPosts] = useState([]);
+  const [editing, setEditing] = useState(null);
+  const [editingText, setEditingText] = useState(null);
   // const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -156,16 +158,24 @@ function App() {
             </div>
             <h3>{(eachPost.isEditing) ? 
             <div>
-              <input type="text"/>
-              <button onClick={()=> {
-                const updatedState = posts.map(eachItem => {
-                  if(eachItem?.id === eachPost?.id){
-                    return {...eachItem, isEditing: !eachItem.isEditing}
-                  }else{
-                    return eachItem
-                  }
-                })
-                setPosts(updatedState)
+              <form >
+              <input type="text" value={editingText}
+              onChange={(e)=>{
+                setEditingText(e.target.value)
+              }}
+              />
+
+              </form>
+              <button onClick={(postId)=> {
+                setEditing(postId)
+                // const updatedState = posts.map(eachItem => {
+                //   if(eachItem?.id === eachPost?.id){
+                //     return {...eachItem, isEditing: !eachItem.isEditing}
+                //   }else{
+                //     return eachItem
+                //   }
+                // })
+                // setPosts(updatedState)
               }}>ok</button>
               </div>:
             eachPost?.text}</h3>
