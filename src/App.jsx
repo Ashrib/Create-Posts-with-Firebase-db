@@ -49,7 +49,7 @@ function App() {
     // getData();
     let unsubscribe;
     const getRealTimeData = async () => {
-      const q = query(collection(db, "posts"));
+      const q = query(collection(db, "posts"), orderBy("createdOn", "desc"));
       unsubscribe = onSnapshot(q, (querySnapshot) => {
       const allPosts = [];
       querySnapshot.forEach((doc) => {
@@ -120,7 +120,7 @@ function App() {
             <h3>{eachPost?.text}</h3>
 
             <span>{
-              moment(eachPost?.createdOn)
+              moment(eachPost?.createdOn?.seconds*1000)
                 .format('Do MMMM, h:mm a')
             }</span>
 
