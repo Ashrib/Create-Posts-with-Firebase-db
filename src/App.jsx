@@ -5,7 +5,8 @@ import moment from 'moment';
 import { initializeApp } from "firebase/app";
 import {
    getFirestore, collection, addDoc, 
-   getDocs, doc, onSnapshot, query 
+   getDocs, doc, onSnapshot, query,
+   updateDoc, serverTimestamp, orderBy, limit
   } from "firebase/firestore";
  
 const firebaseConfig = {
@@ -81,7 +82,8 @@ function App() {
       try {
         const docRef = await addDoc(collection(db, "posts"), {
           text: postText,
-          createdOn: new Date().getTime(),
+          createdOn: serverTimestamp(),
+          // createdOn: new Date().getTime(),
           // postId: id
         });
         console.log("Document written with ID: ", docRef.id);
